@@ -88,7 +88,7 @@ public class Code01_SetAllHashMap {
 }
 
 // 实现LRU结构
-public class Code02_LRU {
+public class Code02_LRU {//(least recently used)缓存结构
 
 	// 测试链接 : https://leetcode.cn/problems/lru-cache/
 	class LRUCache {
@@ -105,9 +105,9 @@ public class Code02_LRU {
 			}
 		}
 
-		class DoubleList {
-			private DoubleNode head;
-			private DoubleNode tail;
+		class DoubleList {//双向链表存(k,v)节点，其内存地址作为map的value
+			private DoubleNode head;//头表示最早
+			private DoubleNode tail;//尾表示最晚
 
 			public DoubleList() {
 				head = null;
@@ -127,7 +127,7 @@ public class Code02_LRU {
 					tail = newNode;
 				}
 			}
-
+			//移动本身存在的节点到尾部
 			public void moveNodeToTail(DoubleNode node) {
 				if (tail == node) {
 					return;
@@ -136,8 +136,8 @@ public class Code02_LRU {
 					head = node.next;
 					head.last = null;
 				} else {
-					node.last.next = node.next;
-					node.next.last = node.last;
+					node.last.next = node.next;//前面连后面
+					node.next.last = node.last;//后面连前面
 				}
 				node.last = tail;
 				node.next = null;
@@ -185,12 +185,16 @@ public class Code02_LRU {
 		}
 
 		public void put(int key, int value) {
+			//更新操作
 			if (keyNodeMap.containsKey(key)) {
 				DoubleNode node = keyNodeMap.get(key);
 				node.val = value;
 				nodeList.moveNodeToTail(node);
-			} else {
+			}//新增操作，需要讨论DoubleList是否已满 
+			else {
 				if (keyNodeMap.size() == capacity) {
+					//nodeList.removeHead()返回节点，
+					//找到它的key作为HashMap的key删除
 					keyNodeMap.remove(nodeList.removeHead().key);
 				}
 				DoubleNode newNode = new DoubleNode(key, value);
@@ -209,9 +213,9 @@ public class Code03_InsertDeleteRandom {
 	// 测试链接 : https://leetcode.cn/problems/insert-delete-getrandom-o1/
 	class RandomizedSet {
 
-		public HashMap<Integer, Integer> map;
+		public HashMap<Integer, Integer> map;//查表可得数据在动态数组的下标
 
-		public ArrayList<Integer> arr;
+		public ArrayList<Integer> arr;//动态数组，数据与下标对应
 
 		public RandomizedSet() {
 			map = new HashMap<>();
@@ -227,14 +231,16 @@ public class Code03_InsertDeleteRandom {
 			return true;
 		}
 
+		//删除的问题在于，动态数组中会留空，随机获取行为可能获取到不存在的值
+		//解决：用最后一个填补洞
 		public boolean remove(int val) {
 			if (!map.containsKey(val)) {
 				return false;
 			}
 			int valIndex = map.get(val);
 			int endValue = arr.get(arr.size() - 1);
-			map.put(endValue, valIndex);
-			arr.set(valIndex, endValue);
+			map.put(endValue, valIndex);//hashMap.put(k,v)插入键值对
+			arr.set(valIndex, endValue);//arrayList.set(i,v)将下标i的值改为v
 			map.remove(val);
 			arr.remove(arr.size() - 1);
 			return true;
