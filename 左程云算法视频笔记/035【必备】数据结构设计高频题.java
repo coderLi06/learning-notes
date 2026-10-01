@@ -316,23 +316,23 @@ public class Code05_MedianFinder {
 
 	// 测试链接 : https://leetcode.cn/problems/find-median-from-data-stream/
 	class MedianFinder {
-
+//大根堆存小的一半数据，小根堆存大的一半数据
 		private PriorityQueue<Integer> maxHeap;
 
 		private PriorityQueue<Integer> minHeap;
 
 		public MedianFinder() {
-			maxHeap = new PriorityQueue<>((a, b) -> b - a);
-			minHeap = new PriorityQueue<>((a, b) -> a - b);
-		}
+			maxHeap = new PriorityQueue<>((a, b) -> b - a);//快速建立大根堆
+			minHeap = new PriorityQueue<>((a, b) -> a - b);//快速建立小根堆
+		}//默认小根堆，通过b-a调整优先级，所有比较器默认返回-1则a优先级高
 
 		public void addNum(int num) {
 			if (maxHeap.isEmpty() || maxHeap.peek() >= num) {
-				maxHeap.add(num);
+				maxHeap.add(num);//进大根堆的情况：大根堆为空，或者大根堆的堆顶元素大于等于num
 			} else {
 				minHeap.add(num);
 			}
-			balance();
+			balance();//每次添加完，对两个堆容量进行平衡，保证两个堆的容量差不超过1
 		}
 
 		public double findMedian() {
@@ -344,9 +344,9 @@ public class Code05_MedianFinder {
 		}
 
 		private void balance() {
-			if (Math.abs(maxHeap.size() - minHeap.size()) == 2) {
-				if (maxHeap.size() > minHeap.size()) {
-					minHeap.add(maxHeap.poll());
+			if (Math.abs(maxHeap.size() - minHeap.size()) == 2) {//两个堆的大小差为2时，进行平衡
+				if (maxHeap.size() > minHeap.size()) {//大根堆个数较多，将其堆顶最大元素放入小根堆顶
+					minHeap.add(maxHeap.poll());//poll()方法返回堆顶元素并删除
 				} else {
 					maxHeap.add(minHeap.poll());
 				}
