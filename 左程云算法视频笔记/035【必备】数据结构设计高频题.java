@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.PriorityQueue;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Code01_SetAllHashMap {
 
@@ -355,4 +357,54 @@ public class Code05_MedianFinder {
 
 	}
 
+}
+
+//最大频率栈
+public class Code06_MaximumFrequencyStack{
+
+	// 测试链接 : https://leetcode.cn/problems/maximum-frequency-stack/
+	class FreqStack{
+
+		//出现的最大次数
+		private int topTimes;
+		//栈中每层节点：频率及该频率下的元素
+		private HashMap<Integer, ArrayList<Integer>> cntValues = new HashMap<>();
+		//每一个数对应频率
+		private HashMap<Integer,Integer> valueTimes = new HashMap<>();
+
+		public void push(int val){
+			//更新词频表valueTimes
+			valueTimes.put(val,valueTimes.getOrDefault(val, 0)+1);
+			int curTopTimes = valueTimes.get(val);//新加入数字的频率
+			//若栈中没有当前频率的数组，新建一个
+			if(!cntValues.containsKey(curTopTimes)){
+				cntValues.put(curTopTimes, new ArrayList<>());
+			}
+			//选中当前频率对应的数组，加入当前数字
+			ArrayList<Integer> curTimeValues = cntValues.get(curTopTimes);
+			curTimeValues.add(val);
+			//更新最大频率
+			topTimes = Math.max(topTimes, curTopTimes);
+		}
+
+		public int pop(){
+			//选中最大频率对应的数组
+			ArrayList<Integer> topTimeValues = cntValues.get(topTimes);
+			//移除数组末尾元素作为答案
+			int ans = topTimeValues.remove(topTimeValues.size()-1);
+			//若移除元素后数组变空，删除数组
+			if(topTimeValues.isEmpty()){
+				cntValues.remove(topTimes--);
+			}
+			//更新词频表valueTimes
+			int times = valueTimes.get(ans);
+			//若弹出数字的频率原为1，则从词频表中删除该数字
+			if(times==1){
+				valueTimes.remove(ans);
+			} else {
+				valueTimes.put(ans, times - 1);
+			}
+			return ans;
+		}
+	}
 }
